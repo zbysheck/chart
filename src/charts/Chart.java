@@ -7,6 +7,7 @@ import javafx.application.Application;
 import javafx.geometry.Side;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -19,16 +20,32 @@ import jxl.read.biff.BiffException;
 
 public class Chart extends Application {
 
-	private void setLineTab(Tab lineTab) throws BiffException, IOException
+	/**
+	 * 
+	 * @param lineTab
+	 * @param type 1-line chart, 2-bar chart, 3-pie chart (to go)
+	 * @throws BiffException
+	 * @throws IOException
+	 */
+	private void setLineTab(Tab lineTab, int type) throws BiffException, IOException
 	{
 		//lineTab.setText("Line Chart"); 
 		final CategoryAxis xAxis = new CategoryAxis();
-		final NumberAxis yAxis = new NumberAxis();          
-		final LineChart<String,Number> lc = new LineChart<String,Number>(xAxis,yAxis); 
-
+		final NumberAxis yAxis = new NumberAxis();
+		final LineChart<String,Number> llc = new LineChart<String,Number>(xAxis,yAxis);
+		final BarChart<String,Number> lc = new BarChart<String,Number>(xAxis,yAxis);
+			
+		switch(type){
+		case 1:
+			break;
+		case 2:
+			break;
+		default:
+		}
+		
 		Data d=new Data("tem.xls");
 		d.read(true);
-		d.showf();
+		d.show();
 
 		lc.setTitle(d.getFilename());
 		//xAxis.setLabel(d.h1);
@@ -40,23 +57,15 @@ public class Chart extends Application {
 			System.out.println(i);
 			ser[i] = new XYChart.Series();
 		}
-
-		ser[0].setName(d.getFilename());
-
-
-		Iterator<String> it=d.vv.keySet().iterator();
-
+		
 		for(int i=0;i<d.getColumns();i++){
-			while(it.hasNext()){
-				String tempS=it.next();
-				Float tempF=d.vv.get(tempS);
-				ser[i].getData().add(new XYChart.Data(tempS,tempF));
-				//i++;
-
+			ser[i].setName(d.hc[i]);
+			for(int j=0;j<d.getRows();j++){
+				ser[i].getData().add(new XYChart.Data(d.hr[j],d.getValue(i,j)));
 			}
 			lc.getData().addAll(ser[i]); 
 		}
-		lineTab.setContent(lc); 
+        lineTab.setContent(lc); 
 	}
 	public static void main(String args[])
 	{  
@@ -92,7 +101,7 @@ public class Chart extends Application {
 		/*  
 		 * Definition of New Tab : LineTab*/  
 		final Tab LineTab = new Tab();
-		setLineTab(LineTab);  
+		setLineTab(LineTab,1);  
 
 		/*Addition of tabs to TabPane*/ 
 		tabPane.getTabs().addAll(LineTab);  
